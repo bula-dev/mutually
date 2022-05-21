@@ -14,6 +14,9 @@ class UserView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
+        """
+        Create a user.
+        """
         serializer = serializers.User(data=request.data)
 
         if serializer.is_valid():
@@ -33,4 +36,12 @@ class ChatView(APIView):
         pass
 
 
+
+class LikeView(APIView):
+
+    def get(self, request):
+        print("user is:", type(request.user))
+
+    def post(self, request):
+        print("user is:", request.user)
 

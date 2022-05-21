@@ -16,9 +16,12 @@ class Chat(models.Model):
 
 class Message(models.Model):
     text = models.TextField(max_length=512)
-    sender = models.BooleanField()
-    chat = models.ForeignKey(to=Chat, on_delete=models.CASCADE)
+    sender_is_chat_user1 = models.BooleanField()
+    chat = models.ForeignKey(Chat, on_delete=models.CASCADE)
     time_sent = models.DateTimeField()
     time_read = models.DateTimeField()
 
 
+class Like(models.Model):
+    liker = models.ForeignKey(User, on_delete=models.CASCADE, related_name="liker")
+    likee = models.ForeignKey(User, on_delete=models.CASCADE, related_name="likee")
