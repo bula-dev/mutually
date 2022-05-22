@@ -3,30 +3,37 @@ from api import models, serializers
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
+from django.contrib.auth.models import User
+from rest_framework.authtoken.models import Token
+
 
 
 class UserView(APIView):
 
     def get(self, request):
-        users = models.User.objects.all()
+        profiles = models.Profile.objects.all()
 
-        serializer = serializers.User(users, many=True)
+        serializer = serializers.Profile(profiles, many=True)
+        print(serializer.data)
         return Response(serializer.data)
 
     def post(self, request):
         """
         Create a user.
         """
-        serializer = serializers.User(data=request.data)
+        user = User.objects.create_user(request.data["username"], request.data["password"]) 
+        user.save()
+        token = Token.objects.create(user=user)
+        print(token.key)
+        profile = models.Profile(user=user, birthday=request.data["birthday"])
+        profile.save()
+        return Response(token.key, status=status.HTTP_201_CREATED)
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
+    # {"username": "Buh La", "password": "Håkan", "birthday": "1999-07-20"}
     # name, age, distance
+    # {"token": "Token 309c854ef799bf1db2ca35812902d7f2332a9a98",  "user": "2"}
 
 
 class ChatView(APIView):
@@ -40,8 +47,18 @@ class ChatView(APIView):
 class LikeView(APIView):
 
     def get(self, request):
-        print("user is:", type(request.user))
+        
+        likes = models.Like.objects.all()
+        serializer = serializers.Like(likes, many=True)
+        return Response(serializer.data)
 
     def post(self, request):
-        print("user is:", request.user)
+        user = Token.objects.get(key=request.data["token"].split(" ")[1]).user
+        user2 = models.User.objects.filter(id=request.data["user"])[0]
+        print(user2)
+        like = models.Like(liker=user,likee=user2)
+        like.save()
+        return Response(status=status.HTTP_201_CREATED)
+
+        
 
