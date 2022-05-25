@@ -17,7 +17,7 @@ class UserView(APIView):
         """
         users = models.User.objects.all()
 
-        serializer = serializers.RegisterSerializer(users, many=True)
+        serializer = serializers.User(users, many=True)
         print(serializer.data)
         return Response(serializer.data)
 
@@ -47,9 +47,16 @@ class ProfileView(APIView):
     def post(self, request):
         """ Create profile"""
         serializer = serializers.Profile(data=request.data)
+        print("qweqwe")
+        if serializer.is_valid():
+            print("***************")
+            print(serializer.validated_data)
+            serializer.save()
+            return Response(status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-    # {"username": "Buh La", "password": "Håkan", "birthday": "1999-07-20"}
+    # {"user": "1", "birthday": "1999-07-20"}
     # name, age, distance
     # {"token": "Token 309c854ef799bf1db2ca35812902d7f2332a9a98",  "user": "2"}
     # {"username": "bula", "password": "123"}
@@ -62,7 +69,7 @@ class ChatView(APIView):
         pass
 
 # TODO IS OUTDATED
-""" 
+
 class LikeView(APIView):
 
     def get(self, request):
@@ -78,6 +85,6 @@ class LikeView(APIView):
         like = models.Like(liker=user,likee=user2)
         like.save()
         return Response(status=status.HTTP_201_CREATED)
-"""
+
         
 

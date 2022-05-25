@@ -10,13 +10,13 @@ from django.contrib.auth.password_validation import validate_password
 
 class Profile(serializers.ModelSerializer):
 
-    age = serializers.SerializerMethodField()
+    #age = serializers.SerializerMethodField()
     #username = serializers.StringRelatedField(source="user")
-    user = serializers.PrimaryKeyRelatedField(read_only=True)
+    user_id = serializers.PrimaryKeyRelatedField(read_only=True, source="user")
 
     class Meta:
         model = models.Profile
-        fields = ["__all__"]
+        fields = ["birthday",  "user_id"]
     
     def get_age(self, obj):
         return relativedelta(datetime.date.today(), obj.birthday).years
